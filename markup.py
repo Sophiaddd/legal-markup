@@ -10,17 +10,30 @@ from matching import rule_maker, complex_rule_maker
 def diagnostic(s, start, end):
     return s[max(0, start-24) : min(len(s)-1, start+24)]
 
+def html_link(href, content):
+    '''Creates html for a hyperlink to href.'''
+
+    return('''<a href="{0}">{1}</a>'''.format(href, content))
+
+def markdown_link(href, content):
+    '''Creates a link in the markdown language.'''
+
+    return('''[{0}]({1})'''.format(content, href))
+
 @rule_maker('wikipedia', '''(?is)(wikipedia article) ((?P<q>"|&quot;|')(.*?)(?P=q))''')
-def wikipedia(m):
+def wikipedia(m, link):
+    #link=html_link
     s=m.group(4)
     r=s[0].upper() + s[1:].lower()
     (r, N)=re.subn(' ', '_', r)
 
-#
+#    '''"
 #    print(("s=[{0}]\nr=[{1}]".format(s,r)))
 #    print(("g3=[{0}]".format(m.group(3))))
 #    print((m.group('q')))
-    return '{0} &quot;<a href="http://en.wikipedia.org/wiki/{1}" class="wikipedia">{2}</a>&quot;'.format(m.group(1), r, s)
+    #return '{0} &quot;<a href="http://en.wikipedia.org/wiki/{1}" class="wikipedia">{2}</a>&quot;'.format(m.group(1), r, s)
+    #
+    return '{0} &quot;{hyperlink}&quot;'.format(m.group(1), hyperlink=link(r, s))
 
 # '(?is)act\s*(\d{4}'
 #@complex_rule_maker('(?is)(?P<sort>act|regulations|order)\s*(?P<year>\d{4})')
@@ -48,7 +61,8 @@ def wikipedia(m):
 #
 
 @complex_rule_maker('(?is)(?P<sort>act|regulations|order)\s*(?P<year>\d{4})')
-def act(m):
+def act(m, link):
+    #link=html_link
     s=m.string
     mg=m.groupdict()
     year=mg['year']
@@ -79,13 +93,15 @@ def act(m):
 #    act_name='{0} Act {1}'.format(mobj.group(0), year)
     act=actdict[mobj.group(0)]
     href=act.href
-    return ('ukpga', mobj.start(), m.end(), '''<a href="{0}">{1}</a>'''.format(href, mobj.group(0)))
+    #return ('ukpga', mobj.start(), m.end(), '''<a href="{0}">{1}</a>'''.format(href, mobj.group(0)))
+    return ('ukpga', mobj.start(), m.end(), link(href, mobj.group(0)))
 #    
 
-def transform(html):
+def transform(html, link=html_link):
    log=[]
-   (html, log) = wikipedia(html, log)
-   (html, log) = act(html, log)
+   #link=markdown_link#html_link
+   (html, log) = wikipedia(html, log, link)
+   (html, log) = act(html, log, link)
    #print log
    return matching.collapse(html, log)
 

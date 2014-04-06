@@ -27,9 +27,9 @@ def match_maker(pattern):
 def rule_maker(name, pattern):
     pat=re.compile(pattern)
     def rule(func):
-        def result(s, log):
+        def result(s, log, *args, **varargs):
            for mobj in pat.finditer(s):
-               replacement=func(mobj)
+               replacement=func(mobj, *args, **varargs)
                log.append ((name, mobj.start(), mobj.end(), replacement))
 
            return(s, log)
@@ -38,10 +38,10 @@ def rule_maker(name, pattern):
 
 def complex_rule_maker(pattern):
     pat=re.compile(pattern)
-    def rule(func):
-        def result(s, log):
+    def rule(func):    # func is the function operated on
+        def result(s, log, *args, **varargs):    
             for mobj in pat.finditer(s):
-                l=func(mobj)
+                l=func(mobj, *args, **varargs)
                 log.append(l)
             return(s, log)
         return result
