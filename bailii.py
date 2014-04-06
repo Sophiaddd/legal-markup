@@ -17,11 +17,15 @@ import re
 import data
 from matching import match_maker
 
-def normalise_party(s):
-    '''Normalises a case title'''
+def normalise_party(s, corporate=True):
+    '''Normalises a case title
+
+    s - a string containing the party's title
+    corporate - whether to remove corporate "surnames" such as Ltd (defaults to true)'''
 
     (s, N)=re.subn('(?is)&amp;\s*(Anor|Ors)\s*$', '', s)
-    (s, N)=re.subn('(?is)(Ltd|GmbH)\s*$', '', s)
+    if corporate:
+        (s, N)=re.subn('(?is)(Ltd|GmbH)\s*$', '', s)
     s=s.strip()
     return(s)
     
@@ -81,7 +85,7 @@ def neutral_citation(m):
     
 
 def get(filename):
-    html_file=open(filename, 'r')
+    html_file=open(filename, 'r', encoding="latin-1")
     html=html_file.read()
 
     return html
