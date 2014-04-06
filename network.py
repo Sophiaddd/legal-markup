@@ -11,6 +11,8 @@ def url_encode(url):
 
 def cache_get(url, dir="downloads"):
     burl=url_encode(url)
+    if not os.path.exists(dir):
+        os.makedirs(dir) # very obscure race condition possible leading to OSError
     bfile=os.path.join(dir, burl)
     if os.path.exists(bfile):
         print("Reading from file {0}".format(bfile))

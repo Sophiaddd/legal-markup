@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Companies Act 1980 (c.22) is not available on the opsi site
 # could the hansard site at millbank systems be of assistance?
 
@@ -22,7 +23,7 @@
 
 #
 
-import urllib.request
+#import urllib.request
 import xml.etree.ElementTree
 
 import network
